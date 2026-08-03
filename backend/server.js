@@ -28,3 +28,5 @@ const transactionRoutes = require('./routes/transactionRoutes');
 app.use('/api/transactions', transactionRoutes);
 const budgetRoutes = require('./routes/budgetRoutes');
 app.use('/api/budgets', budgetRoutes);
+const assistantRoutes = require('./routes/assistantRoutes');
+app.use('/api/assistant', assistantRoutes);

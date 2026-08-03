@@ -6,25 +6,41 @@ function AddTransactionForm({ onTransactionAdded }) {
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('1');
   const [error, setError] = useState('');
+  const [anomalyWarning, setAnomalyWarning] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+  setAnomalyWarning('');
 
+  try {
+    // check for anomaly first
     try {
-      const res = await api.post('/transactions', {
-        amount: parseFloat(amount),
-        description,
+      const anomalyRes = await api.post('/transactions/check-anomaly', {
         category_id: parseInt(categoryId),
+        amount: parseFloat(amount),
       });
-      setAmount('');
-      setDescription('');
-      onTransactionAdded(res.data.transaction); // tell parent a new one was added
+      if (anomalyRes.data.is_anomaly) {
+        setAnomalyWarning(
+          `This is unusual! Average for this category is ₹${anomalyRes.data.average_amount}, but this is ₹${amount}.`
+        );
+      }
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to add transaction');
+      // silently ignore anomaly check failure — don't block adding the transaction
     }
-  };
 
+    const res = await api.post('/transactions', {
+      amount: parseFloat(amount),
+      description,
+      category_id: parseInt(categoryId),
+    });
+    setAmount('');
+    setDescription('');
+    onTransactionAdded(res.data.transaction);
+  } catch (err) {
+    setError(err.response?.data?.error || 'Failed to add transaction');
+  }
+};
   return (
     <form onSubmit={handleSubmit}>
       <input
@@ -51,6 +67,7 @@ function AddTransactionForm({ onTransactionAdded }) {
       </select>
       <button type="submit">Add</button>
       {error && <p style={{ color: 'red' }}>{error}</p>}
+    {anomalyWarning && <p style={{ color: 'orange' }}>⚠️ {anomalyWarning}</p>}
     </form>
   );
 }

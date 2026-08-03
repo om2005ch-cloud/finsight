@@ -7,12 +7,32 @@ const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
 // CREATE a transaction
+const axios = require('axios');
+
 router.post('/', authMiddleware, validate(createTransactionSchema), async (req, res) => {
-  const { amount, description, category_id, transaction_date } = req.body;
+  const { amount, description, transaction_date } = req.body;
+  let { category_id } = req.body;
   const userId = req.userId;
 
-  if (!amount) {
-    return res.status(400).json({ error: 'Amount is required' });
+  // if no category given, ask the ML service to predict one
+  if (!category_id && description) {
+    try {
+      const mlResponse = await axios.post('http://localhost:5001/predict-category', {
+        description,
+      });
+      const predictedCategory = mlResponse.data.category;
+
+      const catResult = await pool.query(
+        'SELECT id FROM categories WHERE name = $1',
+        [predictedCategory]
+      );
+      if (catResult.rows.length > 0) {
+        category_id = catResult.rows[0].id;
+      }
+    } catch (err) {
+      console.error('ML service error:', err.message);
+      // fail gracefully — transaction still gets created, just uncategorized
+    }
   }
 
   try {
@@ -109,6 +129,91 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     }
 
     res.json({ message: 'Transaction deleted' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+// GET monthly spending history for a category (for forecasting)
+router.get('/history/:categoryId', authMiddleware, async (req, res) => {
+  const { categoryId } = req.params;
+
+  try {
+    const result = await pool.query(
+      `SELECT 
+         TO_CHAR(DATE_TRUNC('month', transaction_date), 'YYYY-MM') AS month,
+         SUM(amount) AS total
+       FROM transactions
+       WHERE user_id = $1 AND category_id = $2
+       GROUP BY DATE_TRUNC('month', transaction_date)
+       ORDER BY DATE_TRUNC('month', transaction_date) ASC`,
+      [req.userId, categoryId]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+// GET forecast for a category
+router.get('/forecast/:categoryId', authMiddleware, async (req, res) => {
+  const { categoryId } = req.params;
+
+  try {
+    const historyResult = await pool.query(
+  `SELECT 
+     TO_CHAR(DATE_TRUNC('month', transaction_date), 'YYYY-MM') AS month,
+     SUM(amount) AS total
+   FROM transactions
+   WHERE user_id = $1 AND category_id = $2
+     AND DATE_TRUNC('month', transaction_date) < DATE_TRUNC('month', CURRENT_DATE)
+   GROUP BY DATE_TRUNC('month', transaction_date)
+   ORDER BY DATE_TRUNC('month', transaction_date) ASC`,
+  [req.userId, categoryId]
+);
+
+    if (historyResult.rows.length < 2) {
+      return res.status(400).json({ error: 'Not enough history to forecast' });
+    }
+
+    const mlResponse = await axios.post('http://localhost:5001/forecast', {
+      history: historyResult.rows,
+    });
+
+    res.json(mlResponse.data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+// Check if a transaction amount is anomalous for a category
+router.post('/check-anomaly', authMiddleware, async (req, res) => {
+  const { category_id, amount } = req.body;
+
+  if (!category_id || !amount) {
+    return res.status(400).json({ error: 'category_id and amount are required' });
+  }
+
+  try {
+    const historyResult = await pool.query(
+      `SELECT amount FROM transactions 
+       WHERE user_id = $1 AND category_id = $2
+       ORDER BY transaction_date DESC LIMIT 20`,
+      [req.userId, category_id]
+    );
+
+    const amounts = historyResult.rows.map(r => parseFloat(r.amount));
+
+    if (amounts.length < 4) {
+      return res.json({ is_anomaly: false, message: 'Not enough history to check' });
+    }
+
+    const mlResponse = await axios.post('http://localhost:5001/detect-anomaly', {
+      amounts,
+      new_amount: parseFloat(amount),
+    });
+
+    res.json(mlResponse.data);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
