@@ -219,4 +219,25 @@ router.post('/check-anomaly', authMiddleware, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+// GET total monthly spending history (all categories combined)
+router.get('/history-overview', authMiddleware, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT 
+         TO_CHAR(DATE_TRUNC('month', transaction_date), 'Mon YYYY') AS month,
+         SUM(amount) AS total
+       FROM transactions
+       WHERE user_id = $1
+         AND DATE_TRUNC('month', transaction_date) < DATE_TRUNC('month', CURRENT_DATE)
+       GROUP BY DATE_TRUNC('month', transaction_date)
+       ORDER BY DATE_TRUNC('month', transaction_date) ASC
+       LIMIT 6`,
+      [req.userId]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 module.exports = router;

@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Plus, IndianRupee, Tag } from 'lucide-react';
 import api from '../api/axios';
 
 function AddTransactionForm({ onTransactionAdded }) {
@@ -8,67 +10,109 @@ function AddTransactionForm({ onTransactionAdded }) {
   const [error, setError] = useState('');
   const [anomalyWarning, setAnomalyWarning] = useState('');
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError('');
-  setAnomalyWarning('');
+  const categories = [
+    { id: '1', name: 'Food' },
+    { id: '2', name: 'Transport' },
+    { id: '3', name: 'Shopping' },
+    { id: '4', name: 'Bills' },
+    { id: '5', name: 'Entertainment' },
+    { id: '6', name: 'Health' },
+    { id: '7', name: 'Other' },
+  ];
 
-  try {
-    // check for anomaly first
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setAnomalyWarning('');
+
     try {
-      const anomalyRes = await api.post('/transactions/check-anomaly', {
-        category_id: parseInt(categoryId),
-        amount: parseFloat(amount),
-      });
-      if (anomalyRes.data.is_anomaly) {
-        setAnomalyWarning(
-          `This is unusual! Average for this category is ₹${anomalyRes.data.average_amount}, but this is ₹${amount}.`
-        );
+      try {
+        const anomalyRes = await api.post('/transactions/check-anomaly', {
+          category_id: parseInt(categoryId),
+          amount: parseFloat(amount),
+        });
+        if (anomalyRes.data.is_anomaly) {
+          setAnomalyWarning(
+            `Unusual! Average for this category is ₹${anomalyRes.data.average_amount}, this is ₹${amount}.`
+          );
+        }
+      } catch (err) {
+        // ignore
       }
-    } catch (err) {
-      // silently ignore anomaly check failure — don't block adding the transaction
-    }
 
-    const res = await api.post('/transactions', {
-      amount: parseFloat(amount),
-      description,
-      category_id: parseInt(categoryId),
-    });
-    setAmount('');
-    setDescription('');
-    onTransactionAdded(res.data.transaction);
-  } catch (err) {
-    setError(err.response?.data?.error || 'Failed to add transaction');
-  }
-};
+      const res = await api.post('/transactions', {
+        amount: parseFloat(amount),
+        description,
+        category_id: parseInt(categoryId),
+      });
+      setAmount('');
+      setDescription('');
+      onTransactionAdded(res.data.transaction);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to add transaction');
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="number"
-        placeholder="Amount"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        required
-      />
-      <input
-        type="text"
-        placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
-        <option value="1">Food</option>
-        <option value="2">Transport</option>
-        <option value="3">Shopping</option>
-        <option value="4">Bills</option>
-        <option value="5">Entertainment</option>
-        <option value="6">Health</option>
-        <option value="7">Other</option>
-      </select>
-      <button type="submit">Add</button>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-    {anomalyWarning && <p style={{ color: 'orange' }}>⚠️ {anomalyWarning}</p>}
-    </form>
+    <motion.div
+      whileHover={{ boxShadow: '0 0 40px rgba(16, 185, 129, 0.1)' }}
+      className="bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-2xl p-6"
+    >
+      <h3 className="text-white font-semibold mb-4">Add Transaction</h3>
+      <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-3">
+        <div className="relative flex-1">
+          <IndianRupee className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <input
+            type="number"
+            placeholder="Amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-3 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/60 focus:shadow-[0_0_20px_rgba(16,185,129,0.15)] transition-all duration-300"
+          />
+        </div>
+        <input
+          type="text"
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="flex-[1.5] bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/60 focus:shadow-[0_0_20px_rgba(16,185,129,0.15)] transition-all duration-300"
+        />
+        <div className="relative">
+          <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+          <select
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            className="bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-emerald-500/60 transition-all duration-300 appearance-none cursor-pointer"
+          >
+            {categories.map((c) => (
+              <option key={c.id} value={c.id} className="bg-gray-900">
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <motion.button
+          type="submit"
+          whileHover={{ scale: 1.05, boxShadow: '0 0 25px rgba(16, 185, 129, 0.5)' }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl px-6 py-3 shadow-lg shadow-emerald-500/20 transition-shadow duration-300"
+        >
+          <Plus className="w-4 h-4" />
+          Add
+        </motion.button>
+      </form>
+      {error && <p className="text-red-400 text-sm mt-3">{error}</p>}
+      {anomalyWarning && (
+        <motion.p
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-amber-400 text-sm mt-3 flex items-center gap-1.5"
+        >
+          ⚠️ {anomalyWarning}
+        </motion.p>
+      )}
+    </motion.div>
   );
 }
 

@@ -81,3 +81,21 @@
 - Added monthly insight summary display, auto-fetched on dashboard load
 - Added anomaly detection warning when adding transactions — flags unusually large amounts before/alongside creation
 - Confirmed all 4 AI/ML features (categorization, forecasting, anomaly detection, RAG assistant) fully wired and visible in the frontend
+## Day 15
+- Set up Tailwind CSS + Framer Motion in the frontend
+- Designed and integrated a custom logo
+- Built reusable AnimatedBackground component (glowing, drifting gradient orbs)
+- Completely redesigned Login and Signup pages: glass-morphic card, staggered entrance animations, icon-enhanced inputs with focus glow, gradient CTA buttons with hover glow
+- Established emerald/teal as the app's core color theme, matching the logo
+## Day 16
+- Built Navbar component with logo and logout, sticky glass header
+- Completely redesigned Dashboard: stat cards with icons, animated budget progress bars, color-coded trend badges, staggered transaction list entrance
+- Restyled AddTransactionForm to match theme — icon inputs, glowing Add button, animated anomaly warning
+- Restyled AssistantChat — glass card, glowing send button, spinning loader state, highlighted answer box
+- Added consistent hover interactions (lift + glow) across all dashboard cards and transaction rows
+## Day 18
+- Installed Recharts, built custom-styled animated area chart for spending trends (glass tooltip, gradient fill, self-drawing animation)
+- Built AnimatedNumber component — numbers count up smoothly from 0 using Framer Motion's useMotionValue
+- Added GET /api/transactions/history-overview backend endpoint — aggregates total monthly spending across all categories
+- Applied consistent hover glow effect across all dashboard cards (previously inconsistent)
+- Wired chart and animated forecast number into Dashboard
