@@ -99,3 +99,33 @@
 - Added GET /api/transactions/history-overview backend endpoint — aggregates total monthly spending across all categories
 - Applied consistent hover glow effect across all dashboard cards (previously inconsistent)
 - Wired chart and animated forecast number into Dashboard
+## Day 19
+- Built Feature 1: Smart Financial Goal Planner & "What-If" Spending Cut Simulator (0 LLM API calls, 100% deterministic math & SQL)
+- Auto-initialized `goals` PostgreSQL table on server startup (`initDb.js`)
+- Added Zod validators (`goalValidator.js`) and REST endpoints (`GET /api/goals`, `POST /api/goals`, `PUT /api/goals/:id`, `DELETE /api/goals/:id`)
+- Built `/api/goals/simulate` endpoint to compute projected goal completion date acceleration based on category cut percentages
+- Created `GoalPlanner.jsx` UI component with glassmorphic cards, goal progress bars, quick savings deposit, and real-time interactive What-If cut sliders
+- Integrated `GoalPlanner` into main Dashboard UI
+## Day 20
+- Built Feature 2: Automated Subscription & Recurring Bill Detector (0 LLM API calls, algorithmic interval matching)
+- Auto-initialized `subscriptions` PostgreSQL table on server startup (`initDb.js`)
+- Added Zod validator (`subscriptionValidator.js`) and REST endpoints (`GET /api/subscriptions`, `POST /api/subscriptions`, `DELETE /api/subscriptions/:id`, `POST /api/subscriptions/dismiss`)
+- Built algorithmic pattern detection analyzing merchant name normalization, inter-transaction day delta ($\Delta t \approx 30$ days / $365$ days), and price hike detection (>8% variance)
+- Created `SubscriptionTracker.jsx` UI component displaying total monthly/annual recurring costs, 7-day upcoming renewal alerts, price hike badges, delete/dismiss actions for all items, and manual subscription tracking
+- Integrated `SubscriptionTracker` into Dashboard UI
+## Day 21
+- Built Feature 5: Financial Health Score & Gamified Micro-Habits (0 LLM API calls, 100% rule-based math & SQL)
+- Built `healthScoreRoutes.js` (`GET /api/health-score`) evaluating Budget Adherence (35 pts), Goal Progress (30 pts), Spending Stability Buffer (20 pts), and Subscription Efficiency (15 pts) into a single 0-100 composite score
+- Algorithmically generated actionable weekly micro-habits based on live PostgreSQL metrics
+- Built `HealthScoreCard.jsx` UI component featuring animated count-up score gauge, sub-score breakdown bars, and interactive habit completion checkboxes
+- Integrated `HealthScoreCard` into Dashboard UI
+## Day 20 (Testing)
+- Set up Jest + Supertest for backend API testing
+- Created isolated `finsight_test` database, separate `.env.test` config
+- Restructured server.js to export the Express app without auto-starting the server (enables testing without port conflicts)
+- Wrote first test suite: auth routes — signup success, duplicate email rejection, login success, wrong password rejection
+- All 4 tests passing
+## Day 20 (Testing, continued)
+- Wrote transaction route test suite: auth rejection, creation, validation rejection, read, update, delete, and post-delete verification
+- Full lifecycle tested end-to-end using a single transaction ID across sequential tests
+- Total: 11 passing tests across 2 test suites (auth + transactions)

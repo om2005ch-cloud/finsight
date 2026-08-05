@@ -3,7 +3,10 @@ import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, AlertTriangle, Wallet, Receipt } from 'lucide-react';
 import api from '../api/axios';
 import AddTransactionForm from '../components/AddTransactionForm';
-import AssistantChat from '../components/AssistantChat';
+import GoalPlanner from '../components/GoalPlanner';
+import SubscriptionTracker from '../components/SubscriptionTracker';
+import HealthScoreCard from '../components/HealthScoreCard';
+import FloatingChat from '../components/FloatingChat';
 import AnimatedBackground from '../components/AnimatedBackground';
 import Navbar from '../components/Navbar';
 import SpendingChart from '../components/SpendingChart';
@@ -160,6 +163,21 @@ function Dashboard() {
         {/* Spending chart */}
         {chartData.length > 0 && <SpendingChart data={chartData} />}
 
+        {/* Goal Planner & What-If Simulator */}
+        <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.25 }}>
+          <GoalPlanner />
+        </motion.div>
+
+        {/* Subscription & Recurring Bill Detector */}
+        <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.28 }}>
+          <SubscriptionTracker />
+        </motion.div>
+
+        {/* Financial Health Score & Gamified Micro-Habits */}
+        <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.3 }}>
+          <HealthScoreCard />
+        </motion.div>
+
         {/* Budget status */}
         <motion.div
           variants={fadeUp}
@@ -239,9 +257,8 @@ function Dashboard() {
         </motion.div>
 
         {/* AI Assistant */}
-        <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.5 }}>
-          <AssistantChat />
-        </motion.div>
+        {/* AI Assistant floating chat */}
+<FloatingChat />
       </div>
     </div>
   );
