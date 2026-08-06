@@ -138,3 +138,7 @@
 - Connected Node backend to live Flask service via ML_SERVICE_URL environment variable
 - Debugged and resolved: hardcoded localhost URL not updated in committed code, then a 502 error caused by Flask's free-tier cold start (service sleeping after inactivity)
 - Confirmed full production pipeline working: React (local) → Node (Render) → Flask (Render) → PostgreSQL (Render), auto-categorization working end-to-end in production
+## Day 21 (Deployment, continued)
+- Increased axios timeout to 60s on all ML service calls (predict-category, forecast, detect-anomaly) to handle Render free-tier cold starts gracefully
+- Added loading state with spinner to AddTransactionForm during ML categorization wait
+- Verified: transaction correctly auto-categorized even after a genuine cold start (Flask waking from sleep)
