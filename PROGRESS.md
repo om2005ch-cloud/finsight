@@ -129,3 +129,7 @@
 - Wrote transaction route test suite: auth rejection, creation, validation rejection, read, update, delete, and post-delete verification
 - Full lifecycle tested end-to-end using a single transaction ID across sequential tests
 - Total: 11 passing tests across 2 test suites (auth + transactions)
+## Day 21 (Deployment)
+- Created production PostgreSQL database on Render, recreated schema via psql
+- Deployed Node backend to Render as a web service, connected to environment variables for DB credentials, JWT secret, and Gemini API key
+- Confirmed live backend successfully connects to live database (GET /api/test working in production)
