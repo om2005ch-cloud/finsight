@@ -17,7 +17,7 @@ router.post('/', authMiddleware, validate(createTransactionSchema), async (req, 
   // if no category given, ask the ML service to predict one
   if (!category_id && description) {
     try {
-      const mlResponse = await axios.post('http://localhost:5001/predict-category', {
+      const mlResponse = await axios.post(`${process.env.ML_SERVICE_URL}/predict-category`, {
         description,
       });
       const predictedCategory = mlResponse.data.category;
@@ -176,7 +176,7 @@ router.get('/forecast/:categoryId', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Not enough history to forecast' });
     }
 
-    const mlResponse = await axios.post('http://localhost:5001/forecast', {
+    const mlResponse = await axios.post(`${process.env.ML_SERVICE_URL}/forecast`, {
       history: historyResult.rows,
     });
 
@@ -208,7 +208,7 @@ router.post('/check-anomaly', authMiddleware, async (req, res) => {
       return res.json({ is_anomaly: false, message: 'Not enough history to check' });
     }
 
-    const mlResponse = await axios.post('http://localhost:5001/detect-anomaly', {
+    const mlResponse = await axios.post(`${process.env.ML_SERVICE_URL}/detect-anomaly`, {
       amounts,
       new_amount: parseFloat(amount),
     });
