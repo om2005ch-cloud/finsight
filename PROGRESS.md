@@ -133,3 +133,8 @@
 - Created production PostgreSQL database on Render, recreated schema via psql
 - Deployed Node backend to Render as a web service, connected to environment variables for DB credentials, JWT secret, and Gemini API key
 - Confirmed live backend successfully connects to live database (GET /api/test working in production)
+## Day 21 (Deployment, continued)
+- Deployed Flask ML service to Render (finsight-ml), added requirements.txt and gunicorn for production
+- Connected Node backend to live Flask service via ML_SERVICE_URL environment variable
+- Debugged and resolved: hardcoded localhost URL not updated in committed code, then a 502 error caused by Flask's free-tier cold start (service sleeping after inactivity)
+- Confirmed full production pipeline working: React (local) → Node (Render) → Flask (Render) → PostgreSQL (Render), auto-categorization working end-to-end in production

@@ -9,6 +9,7 @@ function AddTransactionForm({ onTransactionAdded }) {
   const [categoryId, setCategoryId] = useState('1');
   const [error, setError] = useState('');
   const [anomalyWarning, setAnomalyWarning] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const categories = [
     { id: '1', name: 'Food' },
@@ -24,6 +25,7 @@ function AddTransactionForm({ onTransactionAdded }) {
     e.preventDefault();
     setError('');
     setAnomalyWarning('');
+    setSubmitting(true);
 
     try {
       try {
@@ -50,6 +52,8 @@ function AddTransactionForm({ onTransactionAdded }) {
       onTransactionAdded(res.data.transaction);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to add transaction');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -94,12 +98,21 @@ function AddTransactionForm({ onTransactionAdded }) {
         </div>
         <motion.button
           type="submit"
+          disabled={submitting}
           whileHover={{ scale: 1.05, boxShadow: '0 0 25px rgba(16, 185, 129, 0.5)' }}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl px-6 py-3 shadow-lg shadow-emerald-500/20 transition-shadow duration-300"
+          className="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl px-6 py-3 shadow-lg shadow-emerald-500/20 transition-shadow duration-300 disabled:opacity-60"
         >
-          <Plus className="w-4 h-4" />
-          Add
+          {submitting ? (
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+              className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+            />
+          ) : (
+            <Plus className="w-4 h-4" />
+          )}
+          {submitting ? 'Categorizing...' : 'Add'}
         </motion.button>
       </form>
       {error && <p className="text-red-400 text-sm mt-3">{error}</p>}

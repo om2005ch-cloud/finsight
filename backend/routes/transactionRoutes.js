@@ -19,7 +19,7 @@ router.post('/', authMiddleware, validate(createTransactionSchema), async (req, 
     try {
       const mlResponse = await axios.post(`${process.env.ML_SERVICE_URL}/predict-category`, {
         description,
-      });
+      }, { timeout: 60000 });
       const predictedCategory = mlResponse.data.category;
 
       const catResult = await pool.query(
@@ -178,7 +178,7 @@ router.get('/forecast/:categoryId', authMiddleware, async (req, res) => {
 
     const mlResponse = await axios.post(`${process.env.ML_SERVICE_URL}/forecast`, {
       history: historyResult.rows,
-    });
+    }, { timeout: 60000 });
 
     res.json(mlResponse.data);
   } catch (err) {
@@ -211,7 +211,7 @@ router.post('/check-anomaly', authMiddleware, async (req, res) => {
     const mlResponse = await axios.post(`${process.env.ML_SERVICE_URL}/detect-anomaly`, {
       amounts,
       new_amount: parseFloat(amount),
-    });
+    }, { timeout: 60000 });
 
     res.json(mlResponse.data);
   } catch (err) {
