@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Sparkles, Send } from 'lucide-react';
 import api from '../api/axios';
 
@@ -24,13 +23,10 @@ function AssistantChat() {
   };
 
   return (
-    <motion.div
-      whileHover={{ boxShadow: '0 0 40px rgba(16, 185, 129, 0.1)' }}
-      className="bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-2xl p-6"
-    >
+    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 shadow-sm">
       <div className="flex items-center gap-2 mb-4">
-        <Sparkles className="w-5 h-5 text-emerald-400" />
-        <h3 className="text-white font-semibold">Ask your Finance Assistant</h3>
+        <Sparkles className="w-4 h-4 text-emerald-400" />
+        <h3 className="text-zinc-100 font-semibold text-base tracking-tight">Ask your Finance Assistant</h3>
       </div>
 
       <form onSubmit={handleAsk} className="flex gap-3">
@@ -39,39 +35,28 @@ function AssistantChat() {
           placeholder="e.g. How much did I spend on food?"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/60 focus:shadow-[0_0_20px_rgba(16,185,129,0.15)] transition-all duration-300"
+          className="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-zinc-100 text-sm placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors"
         />
-        <motion.button
+        <button
           type="submit"
           disabled={loading}
-          whileHover={{ scale: 1.05, boxShadow: '0 0 25px rgba(16, 185, 129, 0.5)' }}
-          whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl px-6 py-3 shadow-lg shadow-emerald-500/20 transition-shadow duration-300 disabled:opacity-50"
+          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm rounded-lg px-4 py-2.5 transition-colors disabled:opacity-50 cursor-pointer"
         >
           {loading ? (
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-              className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
-            />
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <Send className="w-4 h-4" />
           )}
           {loading ? 'Thinking' : 'Ask'}
-        </motion.button>
+        </button>
       </form>
 
       {answer && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="mt-4 p-4 bg-emerald-500/[0.06] border border-emerald-500/20 rounded-xl text-gray-200 text-sm leading-relaxed whitespace-pre-wrap"
-        >
+        <div className="mt-4 p-4 bg-zinc-950 border border-zinc-800 rounded-lg text-zinc-200 text-sm leading-relaxed whitespace-pre-wrap">
           {answer}
-        </motion.div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 }
 

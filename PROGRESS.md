@@ -75,19 +75,19 @@
 - Built AssistantChat component — connects to /api/assistant/ask
 - Wired AI assistant into Dashboard — users can now ask natural language questions and get real, data-grounded answers directly in the UI
 - Confirmed full RAG pipeline working visually end-to-end
-## Day 14
+## Day 15
 - Added Food spending forecast display to Dashboard
 - Built AssistantChat component — AI assistant now usable directly in the UI
 - Added monthly insight summary display, auto-fetched on dashboard load
 - Added anomaly detection warning when adding transactions — flags unusually large amounts before/alongside creation
 - Confirmed all 4 AI/ML features (categorization, forecasting, anomaly detection, RAG assistant) fully wired and visible in the frontend
-## Day 15
+## Day 16
 - Set up Tailwind CSS + Framer Motion in the frontend
 - Designed and integrated a custom logo
 - Built reusable AnimatedBackground component (glowing, drifting gradient orbs)
 - Completely redesigned Login and Signup pages: glass-morphic card, staggered entrance animations, icon-enhanced inputs with focus glow, gradient CTA buttons with hover glow
 - Established emerald/teal as the app's core color theme, matching the logo
-## Day 16
+## Day 17
 - Built Navbar component with logo and logout, sticky glass header
 - Completely redesigned Dashboard: stat cards with icons, animated budget progress bars, color-coded trend badges, staggered transaction list entrance
 - Restyled AddTransactionForm to match theme — icon inputs, glowing Add button, animated anomaly warning
@@ -119,26 +119,31 @@
 - Algorithmically generated actionable weekly micro-habits based on live PostgreSQL metrics
 - Built `HealthScoreCard.jsx` UI component featuring animated count-up score gauge, sub-score breakdown bars, and interactive habit completion checkboxes
 - Integrated `HealthScoreCard` into Dashboard UI
-## Day 20 (Testing)
+## Day 22 (Testing)
 - Set up Jest + Supertest for backend API testing
 - Created isolated `finsight_test` database, separate `.env.test` config
 - Restructured server.js to export the Express app without auto-starting the server (enables testing without port conflicts)
 - Wrote first test suite: auth routes — signup success, duplicate email rejection, login success, wrong password rejection
 - All 4 tests passing
-## Day 20 (Testing, continued)
+## Day 22 (Testing, continued)
 - Wrote transaction route test suite: auth rejection, creation, validation rejection, read, update, delete, and post-delete verification
 - Full lifecycle tested end-to-end using a single transaction ID across sequential tests
 - Total: 11 passing tests across 2 test suites (auth + transactions)
-## Day 21 (Deployment)
+## Day 23 (Deployment)
 - Created production PostgreSQL database on Render, recreated schema via psql
 - Deployed Node backend to Render as a web service, connected to environment variables for DB credentials, JWT secret, and Gemini API key
 - Confirmed live backend successfully connects to live database (GET /api/test working in production)
-## Day 21 (Deployment, continued)
+## Day 23 (Deployment, continued)
 - Deployed Flask ML service to Render (finsight-ml), added requirements.txt and gunicorn for production
 - Connected Node backend to live Flask service via ML_SERVICE_URL environment variable
 - Debugged and resolved: hardcoded localhost URL not updated in committed code, then a 502 error caused by Flask's free-tier cold start (service sleeping after inactivity)
 - Confirmed full production pipeline working: React (local) → Node (Render) → Flask (Render) → PostgreSQL (Render), auto-categorization working end-to-end in production
-## Day 21 (Deployment, continued)
+## Day 23 (Deployment, continued)
 - Increased axios timeout to 60s on all ML service calls (predict-category, forecast, detect-anomaly) to handle Render free-tier cold starts gracefully
 - Added loading state with spinner to AddTransactionForm during ML categorization wait
 - Verified: transaction correctly auto-categorized even after a genuine cold start (Flask waking from sleep)
+## Day 24 (Deployment, final)
+- Deployed React frontend to Vercel, connected to live backend via VITE_API_URL environment variable
+- Debugged and fixed a Windows/Linux file-casing bug (login.jsx vs Login.jsx) that broke the Linux-based Vercel build — required disabling Git's core.ignorecase setting to properly track the rename
+- Confirmed full production stack working end-to-end: Vercel (React) → Render (Node) → Render (Flask ML) → Render (PostgreSQL)
+- FinSight is now fully live and publicly accessible

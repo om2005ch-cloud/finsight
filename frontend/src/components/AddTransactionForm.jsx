@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Plus, IndianRupee, Tag } from 'lucide-react';
 import api from '../api/axios';
 
@@ -58,21 +57,18 @@ function AddTransactionForm({ onTransactionAdded }) {
   };
 
   return (
-    <motion.div
-      whileHover={{ boxShadow: '0 0 40px rgba(16, 185, 129, 0.1)' }}
-      className="bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-2xl p-6"
-    >
-      <h3 className="text-white font-semibold mb-4">Add Transaction</h3>
+    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 shadow-sm">
+      <h3 className="text-zinc-100 font-semibold text-base mb-4 tracking-tight">Add Transaction</h3>
       <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
-          <IndianRupee className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <IndianRupee className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
           <input
             type="number"
             placeholder="Amount"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             required
-            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-3 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/60 focus:shadow-[0_0_20px_rgba(16,185,129,0.15)] transition-all duration-300"
+            className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-3.5 py-2.5 text-zinc-100 text-sm placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors"
           />
         </div>
         <input
@@ -80,52 +76,42 @@ function AddTransactionForm({ onTransactionAdded }) {
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="flex-[1.5] bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/60 focus:shadow-[0_0_20px_rgba(16,185,129,0.15)] transition-all duration-300"
+          className="flex-[1.5] bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-zinc-100 text-sm placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors"
         />
         <div className="relative">
-          <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+          <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
           <select
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
-            className="bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-emerald-500/60 transition-all duration-300 appearance-none cursor-pointer"
+            className="bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-8 py-2.5 text-zinc-100 text-sm focus:outline-none focus:border-emerald-500 transition-colors appearance-none cursor-pointer"
           >
             {categories.map((c) => (
-              <option key={c.id} value={c.id} className="bg-gray-900">
+              <option key={c.id} value={c.id} className="bg-zinc-900">
                 {c.name}
               </option>
             ))}
           </select>
         </div>
-        <motion.button
+        <button
           type="submit"
           disabled={submitting}
-          whileHover={{ scale: 1.05, boxShadow: '0 0 25px rgba(16, 185, 129, 0.5)' }}
-          whileTap={{ scale: 0.95 }}
-          className="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold rounded-xl px-6 py-3 shadow-lg shadow-emerald-500/20 transition-shadow duration-300 disabled:opacity-60"
+          className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm rounded-lg px-5 py-2.5 transition-colors disabled:opacity-60 cursor-pointer"
         >
           {submitting ? (
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-              className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
-            />
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <Plus className="w-4 h-4" />
           )}
           {submitting ? 'Categorizing...' : 'Add'}
-        </motion.button>
+        </button>
       </form>
-      {error && <p className="text-red-400 text-sm mt-3">{error}</p>}
+      {error && <p className="text-rose-400 text-sm mt-3">{error}</p>}
       {anomalyWarning && (
-        <motion.p
-          initial={{ opacity: 0, y: -5 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-amber-400 text-sm mt-3 flex items-center gap-1.5"
-        >
+        <p className="text-amber-400 text-sm mt-3 flex items-center gap-1.5 font-medium">
           ⚠️ {anomalyWarning}
-        </motion.p>
+        </p>
       )}
-    </motion.div>
+    </div>
   );
 }
 

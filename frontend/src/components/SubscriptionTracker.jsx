@@ -74,51 +74,45 @@ function SubscriptionTracker() {
     }
   };
 
-  const cardHover = {
-    y: -3,
-    boxShadow: '0 0 35px rgba(16, 185, 129, 0.15)',
-    borderColor: 'rgba(16, 185, 129, 0.3)',
-  };
-
   return (
-    <div className="bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-2xl p-6 relative">
+    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 shadow-sm relative">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
         <div>
           <div className="flex items-center gap-2">
-            <Repeat className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-white font-semibold text-lg">Subscriptions & Recurring Bills</h3>
+            <Repeat className="w-4 h-4 text-emerald-400" />
+            <h3 className="text-zinc-100 font-semibold text-base tracking-tight">Subscriptions & Recurring Bills</h3>
           </div>
-          <p className="text-gray-400 text-xs mt-0.5">
+          <p className="text-zinc-400 text-xs mt-0.5">
             Algorithmic detection of recurring bills, price hikes & annual cost audits
           </p>
         </div>
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/20"
+          className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs rounded-lg transition-colors cursor-pointer"
         >
           <Plus className="w-4 h-4" /> Add Subscription
         </button>
       </div>
 
       {/* Summary Metrics Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <div className="bg-white/[0.03] border border-white/5 rounded-xl p-3.5 text-center">
-          <p className="text-gray-400 text-[11px]">Monthly Recurring</p>
-          <p className="text-emerald-400 font-bold text-lg mt-0.5">₹{metrics.total_monthly_spend?.toLocaleString()}</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+        <div className="bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-center">
+          <p className="text-zinc-400 text-[11px]">Monthly Recurring</p>
+          <p className="text-emerald-400 font-bold text-base mt-0.5">₹{metrics.total_monthly_spend?.toLocaleString()}</p>
         </div>
-        <div className="bg-white/[0.03] border border-white/5 rounded-xl p-3.5 text-center">
-          <p className="text-gray-400 text-[11px]">Annualized Total</p>
-          <p className="text-white font-bold text-lg mt-0.5">₹{metrics.total_annual_spend?.toLocaleString()}</p>
+        <div className="bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-center">
+          <p className="text-zinc-400 text-[11px]">Annualized Total</p>
+          <p className="text-zinc-100 font-bold text-base mt-0.5">₹{metrics.total_annual_spend?.toLocaleString()}</p>
         </div>
-        <div className="bg-white/[0.03] border border-white/5 rounded-xl p-3.5 text-center">
-          <p className="text-gray-400 text-[11px]">Active Subscriptions</p>
-          <p className="text-teal-300 font-bold text-lg mt-0.5">{metrics.total_active_count}</p>
+        <div className="bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-center">
+          <p className="text-zinc-400 text-[11px]">Active Subscriptions</p>
+          <p className="text-zinc-100 font-bold text-base mt-0.5">{metrics.total_active_count}</p>
         </div>
-        <div className="bg-white/[0.03] border border-white/5 rounded-xl p-3.5 text-center">
-          <p className="text-gray-400 text-[11px]">Renewing in 7 Days</p>
-          <p className={metrics.upcoming_count_7days > 0 ? 'text-amber-400 font-bold text-lg mt-0.5' : 'text-gray-300 font-bold text-lg mt-0.5'}>
+        <div className="bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-center">
+          <p className="text-zinc-400 text-[11px]">Renewing in 7 Days</p>
+          <p className={metrics.upcoming_count_7days > 0 ? 'text-amber-400 font-bold text-base mt-0.5' : 'text-zinc-300 font-bold text-base mt-0.5'}>
             {metrics.upcoming_count_7days}
           </p>
         </div>
@@ -126,7 +120,7 @@ function SubscriptionTracker() {
 
       {/* Upcoming Renewals Alert Banner (if any) */}
       {metrics.upcoming_renewals && metrics.upcoming_renewals.length > 0 && (
-        <div className="mb-4 bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex items-center justify-between text-xs text-amber-300">
+        <div className="mb-4 bg-zinc-950 border border-amber-800/50 rounded-lg p-3 flex items-center justify-between text-xs text-amber-300">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
             <span>
@@ -138,47 +132,46 @@ function SubscriptionTracker() {
 
       {/* Subscriptions List */}
       {loading ? (
-        <p className="text-gray-400 text-sm">Detecting recurring transactions...</p>
+        <p className="text-zinc-400 text-sm">Detecting recurring transactions...</p>
       ) : subscriptions.length === 0 ? (
-        <div className="text-center py-8 border border-dashed border-white/10 rounded-xl">
-          <CreditCard className="w-10 h-10 text-gray-500 mx-auto mb-2 opacity-50" />
-          <p className="text-gray-300 text-sm font-medium">No recurring subscriptions detected yet</p>
-          <p className="text-gray-500 text-xs mt-1">Add transactions with repeating titles (e.g. Netflix, Gym) or add manually above</p>
+        <div className="text-center py-8 border border-dashed border-zinc-800 rounded-lg">
+          <CreditCard className="w-8 h-8 text-zinc-600 mx-auto mb-2" />
+          <p className="text-zinc-300 text-sm font-medium">No recurring subscriptions detected yet</p>
+          <p className="text-zinc-500 text-xs mt-1">Add transactions with repeating titles (e.g. Netflix, Gym) or add manually above</p>
         </div>
       ) : (
         <div className="space-y-2.5">
           {subscriptions.map((sub, idx) => (
-            <motion.div
+            <div
               key={sub.id || idx}
-              whileHover={cardHover}
-              className="flex justify-between items-center bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 rounded-xl p-3.5 transition-colors"
+              className="flex justify-between items-center bg-zinc-950 border border-zinc-800 rounded-lg p-3.5 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <div className="w-8 h-8 rounded-lg bg-emerald-950 border border-emerald-800 flex items-center justify-center text-emerald-400">
                   <Repeat className="w-4 h-4" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-white text-sm font-medium">{sub.name}</span>
+                    <span className="text-zinc-100 text-sm font-medium">{sub.name}</span>
                     {sub.is_auto_detected && (
-                      <span className="bg-teal-500/20 text-teal-300 text-[10px] px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                      <span className="bg-zinc-900 border border-zinc-800 text-emerald-400 text-[10px] px-2 py-0.5 rounded font-medium flex items-center gap-1">
                         <Zap className="w-3 h-3" /> Auto-Detected
                       </span>
                     )}
                     {sub.has_price_hike && (
-                      <span className="bg-red-500/20 text-red-400 text-[10px] px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                      <span className="bg-rose-950 border border-rose-900 text-rose-400 text-[10px] px-2 py-0.5 rounded font-medium flex items-center gap-1">
                         <ShieldAlert className="w-3 h-3" /> Price Hike (+₹{sub.price_hike_diff})
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-3 text-gray-400 text-xs mt-0.5">
+                  <div className="flex items-center gap-3 text-zinc-400 text-xs mt-0.5">
                     <span>{sub.category_name || 'General'}</span>
                     <span>•</span>
                     <span className="capitalize">{sub.billing_cycle}</span>
                     {sub.next_billing_date && (
                       <>
                         <span>•</span>
-                        <span className="flex items-center gap-1 text-gray-300">
+                        <span className="flex items-center gap-1 text-zinc-300">
                           <Calendar className="w-3 h-3 text-emerald-400" /> Next: {new Date(sub.next_billing_date).toLocaleDateString()}
                         </span>
                       </>
@@ -189,20 +182,20 @@ function SubscriptionTracker() {
 
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <span className="text-white font-semibold text-sm">₹{sub.amount}</span>
-                  <p className="text-[10px] text-gray-400">
+                  <span className="text-zinc-100 font-semibold text-sm">₹{sub.amount}</span>
+                  <p className="text-[10px] text-zinc-500">
                     {sub.billing_cycle === 'monthly' ? `₹${(sub.amount * 12).toLocaleString()}/yr` : `₹${(sub.amount / 12).toFixed(0)}/mo`}
                   </p>
                 </div>
                 <button
                   onClick={() => handleDeleteOrDismiss(sub)}
-                  className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                  className="p-1.5 rounded-lg bg-zinc-900 hover:bg-rose-950 text-zinc-400 hover:text-rose-400 border border-zinc-800 transition-colors"
                   title="Delete / Dismiss Subscription"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       )}
@@ -210,53 +203,53 @@ function SubscriptionTracker() {
       {/* Modal: Add Manual Subscription */}
       <AnimatePresence>
         {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gray-900 border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl relative"
+              className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 max-w-md w-full shadow-xl relative"
             >
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-white font-semibold text-lg flex items-center gap-2">
-                  <Repeat className="w-5 h-5 text-emerald-400" /> Track Subscription
+                <h3 className="text-zinc-100 font-semibold text-base flex items-center gap-2 tracking-tight">
+                  <Repeat className="w-4 h-4 text-emerald-400" /> Track Subscription
                 </h3>
-                <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-white">
-                  <X className="w-5 h-5" />
+                <button onClick={() => setShowAddModal(false)} className="text-zinc-400 hover:text-zinc-100">
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
               <form onSubmit={handleAddSubscription} className="space-y-4">
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Service / Bill Name</label>
+                  <label className="text-xs text-zinc-400 block mb-1">Service / Bill Name</label>
                   <input
                     type="text"
                     placeholder="e.g. Netflix, Spotify, Internet Bill"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-emerald-400"
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2 text-zinc-100 text-sm focus:outline-none focus:border-emerald-500 transition-colors"
                     required
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs text-gray-400 block mb-1">Amount (₹)</label>
+                    <label className="text-xs text-zinc-400 block mb-1">Amount (₹)</label>
                     <input
                       type="number"
                       placeholder="649"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-emerald-400"
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2 text-zinc-100 text-sm focus:outline-none focus:border-emerald-500 transition-colors"
                       required
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-400 block mb-1">Billing Cycle</label>
+                    <label className="text-xs text-zinc-400 block mb-1">Billing Cycle</label>
                     <select
                       value={cycle}
                       onChange={(e) => setCycle(e.target.value)}
-                      className="w-full bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-emerald-400"
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-emerald-500 transition-colors"
                     >
                       <option value="monthly">Monthly</option>
                       <option value="yearly">Yearly</option>
@@ -265,18 +258,18 @@ function SubscriptionTracker() {
                 </div>
 
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Next Renewal Date (Optional)</label>
+                  <label className="text-xs text-zinc-400 block mb-1">Next Renewal Date (Optional)</label>
                   <input
                     type="date"
                     value={nextDate}
                     onChange={(e) => setNextDate(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-emerald-400"
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2 text-zinc-100 text-sm focus:outline-none focus:border-emerald-500 transition-colors"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full mt-2 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm rounded-xl transition-all"
+                  className="w-full mt-2 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm rounded-lg transition-colors cursor-pointer"
                 >
                   Track Subscription
                 </button>
