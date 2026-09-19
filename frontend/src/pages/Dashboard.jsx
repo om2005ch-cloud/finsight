@@ -14,6 +14,7 @@ import KpiSummaryRow from '../components/KpiSummaryRow';
 import CategoryBreakdownBar from '../components/CategoryBreakdownBar';
 import TransactionListSection from '../components/TransactionListSection';
 import QuickAddModal from '../components/QuickAddModal';
+import DashboardSkeleton from '../components/DashboardSkeleton';
 
 function Dashboard() {
   const [transactions, setTransactions] = useState([]);
@@ -87,12 +88,7 @@ function Dashboard() {
   const TrendIcon = forecast?.trend === 'increasing' ? TrendingUp : forecast?.trend === 'decreasing' ? TrendingDown : Minus;
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-950">
-        <AnimatedBackground />
-        <p className="text-zinc-400 text-sm">Loading financial data...</p>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   if (error) {

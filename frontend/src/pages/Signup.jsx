@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, User } from 'lucide-react';
+import { Mail, Lock, User, Loader2 } from 'lucide-react';
 import api from '../api/axios';
 import AnimatedBackground from '../components/AnimatedBackground';
 import logo from '../assets/logo.png';
@@ -9,17 +9,21 @@ function Signup() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
     try {
       await api.post('/auth/signup', { name, email, password });
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.error || 'Something went wrong');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,6 +53,7 @@ function Signup() {
               onChange={(e) => setName(e.target.value)}
               className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-4 py-2.5 text-zinc-100 text-sm placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors"
               required
+              disabled={loading}
             />
           </div>
 
@@ -61,6 +66,7 @@ function Signup() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-4 py-2.5 text-zinc-100 text-sm placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors"
               required
+              disabled={loading}
             />
           </div>
 
@@ -73,16 +79,31 @@ function Signup() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-4 py-2.5 text-zinc-100 text-sm placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors"
               required
+              disabled={loading}
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg px-4 py-2.5 text-sm transition-colors cursor-pointer"
+            disabled={loading}
+            className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800/60 disabled:cursor-not-allowed text-white font-medium rounded-lg px-4 py-2.5 text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"
           >
-            Sign Up
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Creating account...</span>
+              </>
+            ) : (
+              'Sign Up'
+            )}
           </button>
         </form>
+
+        {loading && (
+          <p className="text-zinc-500 text-xs mt-3 text-center animate-pulse">
+            Connecting to server (waking up free tier if idle)...
+          </p>
+        )}
 
         {error && (
           <p className="text-rose-400 text-sm mt-4 text-center">

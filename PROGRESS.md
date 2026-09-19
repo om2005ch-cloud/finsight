@@ -154,3 +154,10 @@
 - Debugged and resolved local DNS resolution failure (`getaddrinfo ENOTFOUND`) caused by mobile carrier DNS refusing nested AWS subdomains — resolved by configuring adapter to Google Public DNS (`8.8.8.8`).
 - Updated production environment variables on Render backend service to point to Neon connection pooler.
 - Verified end-to-end live stack: Vercel (Frontend) → Render (Node Backend) → Render (Flask ML) → Neon (PostgreSQL).
+## Day 26 (Performance & UX Optimization — Skeleton Loading & Keep-Alive Cron)
+- Diagnosed latency and blank-screen transitions during Render free-tier cold starts.
+- Built reusable shimmering `Skeleton.jsx` primitive with Tailwind CSS `animate-pulse`.
+- Created `DashboardSkeleton.jsx` layout mirroring the real Dashboard (Navbar, 4 KPI cards, Quick Add form, Forecast + AI insight cards, Charts, and Transaction rows).
+- Integrated `DashboardSkeleton` into `Dashboard.jsx` to eliminate blank screens during data fetching.
+- Added interactive button loading spinners (`Loader2`) and helpful server-wake feedback to `Login.jsx` and `Signup.jsx`.
+- Configured 10-minute automated keep-alive cron jobs on cron-job.org for both Render backend (`/api/test`) and Flask ML service to eliminate free-tier sleep cycles and reduce latency.
