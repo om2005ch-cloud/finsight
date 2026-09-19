@@ -147,3 +147,10 @@
 - Debugged and fixed a Windows/Linux file-casing bug (login.jsx vs Login.jsx) that broke the Linux-based Vercel build — required disabling Git's core.ignorecase setting to properly track the rename
 - Confirmed full production stack working end-to-end: Vercel (React) → Render (Node) → Render (Flask ML) → Render (PostgreSQL)
 - FinSight is now fully live and publicly accessible
+## Day 25 (Database Migration — Neon Serverless PostgreSQL)
+- Migrated database provider from Render PostgreSQL (which auto-expires after 30 days) to Neon Serverless PostgreSQL for persistent storage.
+- Executed initial `schema.sql` (users, categories, transactions, budgets) via Neon's SQL Editor console.
+- Refactored `backend/config/db.js` from individual `DB_*` variables to a single connection pooling string (`DATABASE_URL`) with SSL certificate support (`rejectUnauthorized: false`).
+- Debugged and resolved local DNS resolution failure (`getaddrinfo ENOTFOUND`) caused by mobile carrier DNS refusing nested AWS subdomains — resolved by configuring adapter to Google Public DNS (`8.8.8.8`).
+- Updated production environment variables on Render backend service to point to Neon connection pooler.
+- Verified end-to-end live stack: Vercel (Frontend) → Render (Node Backend) → Render (Flask ML) → Neon (PostgreSQL).
