@@ -29,7 +29,7 @@ const initDb = async () => {
     `);
     console.log('Goals and Subscriptions tables verified/created successfully.');
   } catch (err) {
-    console.error('Error initializing database tables:', err.message);
+    console.error('Error initializing database tables:', err);
   }
 };
 
