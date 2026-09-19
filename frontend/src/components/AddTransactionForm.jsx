@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Plus, IndianRupee, Tag } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Plus, IndianRupee, Tag, Camera, Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
 import api from '../api/axios';
 
 function AddTransactionForm({ onTransactionAdded }) {
@@ -9,6 +9,9 @@ function AddTransactionForm({ onTransactionAdded }) {
   const [error, setError] = useState('');
   const [anomalyWarning, setAnomalyWarning] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const [scanSuccessMsg, setScanSuccessMsg] = useState('');
+  const fileInputRef = useRef(null);
 
   const categories = [
     { id: '1', name: 'Food' },
@@ -20,10 +23,61 @@ function AddTransactionForm({ onTransactionAdded }) {
     { id: '7', name: 'Other' },
   ];
 
+  const handleReceiptUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check size (< 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image must be under 5MB');
+      return;
+    }
+
+    setError('');
+    setScanSuccessMsg('');
+    setScanning(true);
+
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = async () => {
+        const base64Data = reader.result;
+        try {
+          const res = await api.post('/assistant/scan-receipt', {
+            imageBase64: base64Data,
+            mimeType: file.type || 'image/jpeg'
+          });
+
+          if (res.data) {
+            setAmount(res.data.amount ? res.data.amount.toString() : '');
+            setDescription(res.data.description || res.data.merchant || '');
+            if (res.data.category_id) {
+              setCategoryId(res.data.category_id.toString());
+            }
+            setScanSuccessMsg(`Receipt scanned: ${res.data.merchant} (₹${res.data.amount})`);
+          }
+        } catch (scanErr) {
+          setError(scanErr.response?.data?.error || 'Failed to scan receipt. Try a clearer image.');
+        } finally {
+          setScanning(false);
+          if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+      };
+      reader.onerror = () => {
+        setError('Failed to read image file');
+        setScanning(false);
+      };
+    } catch (err) {
+      setError('Failed to process image');
+      setScanning(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setAnomalyWarning('');
+    setScanSuccessMsg('');
     setSubmitting(true);
 
     try {
@@ -58,7 +112,48 @@ function AddTransactionForm({ onTransactionAdded }) {
 
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 shadow-sm">
-      <h3 className="text-zinc-100 font-semibold text-base mb-4 tracking-tight">Add Transaction</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-zinc-100 font-semibold text-base tracking-tight">Add Transaction</h3>
+        
+        {/* Hidden File Input for Receipt Upload */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleReceiptUpload}
+          accept="image/*"
+          className="hidden"
+        />
+
+        {/* AI Scan Receipt Trigger Button */}
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={scanning}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-950/80 border border-emerald-800 text-emerald-400 hover:bg-emerald-900/60 transition-colors disabled:opacity-50 cursor-pointer"
+          title="Upload or snap a photo of any receipt/bill"
+        >
+          {scanning ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
+              <span>Scanning with Gemini AI...</span>
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <Camera className="w-3.5 h-3.5" />
+              <span>Scan Receipt (AI)</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {scanSuccessMsg && (
+        <div className="mb-4 flex items-center gap-2 p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-900 text-emerald-300 text-xs animate-fadeIn">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+          <span>{scanSuccessMsg} — Review details below and click Add.</span>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
           <IndianRupee className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
@@ -68,6 +163,7 @@ function AddTransactionForm({ onTransactionAdded }) {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             required
+            step="any"
             className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-10 pr-3.5 py-2.5 text-zinc-100 text-sm placeholder-zinc-500 focus:outline-none focus:border-emerald-500 transition-colors"
           />
         </div>
@@ -94,7 +190,7 @@ function AddTransactionForm({ onTransactionAdded }) {
         </div>
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || scanning}
           className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm rounded-lg px-5 py-2.5 transition-colors disabled:opacity-60 cursor-pointer"
         >
           {submitting ? (
@@ -102,7 +198,7 @@ function AddTransactionForm({ onTransactionAdded }) {
           ) : (
             <Plus className="w-4 h-4" />
           )}
-          {submitting ? 'Categorizing...' : 'Add'}
+          {submitting ? 'Adding...' : 'Add'}
         </button>
       </form>
       {error && <p className="text-rose-400 text-sm mt-3">{error}</p>}

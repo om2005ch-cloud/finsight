@@ -112,4 +112,95 @@ ${context}`;
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+// MULTIMODAL RECEIPT & BILL SCANNER
+router.post('/scan-receipt', authMiddleware, async (req, res) => {
+  const { imageBase64, mimeType = 'image/jpeg' } = req.body;
+
+  if (!imageBase64) {
+    return res.status(400).json({ error: 'imageBase64 image data is required' });
+  }
+
+  try {
+    const catResult = await pool.query('SELECT id, name FROM categories');
+    const categories = catResult.rows;
+
+    const prompt = `You are a financial document parser. Analyze this receipt or bill image and extract the following details accurately:
+1. merchant: The store, restaurant, or business name (string, concise)
+2. amount: The total final amount paid (number, float). Strip any currency symbols.
+3. date: The transaction date in YYYY-MM-DD format (if not found or unclear, use today's date ${new Date().toISOString().split('T')[0]})
+4. category: Best matching category from this exact list: [${categories.map(c => c.name).join(', ')}]
+5. summary: A brief 1-line itemized description (e.g. "Grocery items - Milk, Bread" or "Dinner at Restaurant")
+
+Respond with ONLY a valid JSON object without backticks or markdown, in this exact format:
+{
+  "merchant": "Merchant Name",
+  "amount": 123.45,
+  "date": "YYYY-MM-DD",
+  "category": "Food",
+  "summary": "Short description"
+}`;
+
+    // Clean base64 string if it includes data URL prefix
+    const cleanBase64 = imageBase64.includes(',') ? imageBase64.split(',')[1] : imageBase64;
+    const detectedMime = imageBase64.startsWith('data:')
+      ? imageBase64.substring(5, imageBase64.indexOf(';'))
+      : (mimeType || 'image/jpeg');
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.6-flash',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            {
+              inlineData: {
+                mimeType: detectedMime,
+                data: cleanBase64
+              }
+            },
+            {
+              text: prompt
+            }
+          ]
+        }
+      ],
+      config: {
+        responseMimeType: 'application/json'
+      }
+    });
+
+    let rawText = (response.text || '').trim();
+    let parsed = {};
+    try {
+      parsed = JSON.parse(rawText);
+    } catch (e) {
+      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        parsed = JSON.parse(jsonMatch[0]);
+      } else {
+        throw new Error('Could not parse JSON from vision response');
+      }
+    }
+
+    // Match category to existing DB category
+    const matchedCategory = categories.find(
+      c => c.name.toLowerCase() === (parsed.category || '').toLowerCase()
+    );
+    const category_id = matchedCategory ? matchedCategory.id : (categories.find(c => c.name === 'Other')?.id || 7);
+
+    res.json({
+      merchant: parsed.merchant || 'Scanned Receipt',
+      amount: typeof parsed.amount === 'number' ? parsed.amount : parseFloat(parsed.amount) || 0,
+      date: parsed.date || new Date().toISOString().split('T')[0],
+      category: matchedCategory ? matchedCategory.name : 'Other',
+      category_id: category_id,
+      description: parsed.summary || parsed.merchant || 'Receipt expense'
+    });
+  } catch (err) {
+    console.error('Error scanning receipt with Gemini Vision:', err);
+    res.status(500).json({ error: 'Failed to scan receipt image. Please try a clearer picture.' });
+  }
+});
+
 module.exports = router;

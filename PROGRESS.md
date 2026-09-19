@@ -161,3 +161,10 @@
 - Integrated `DashboardSkeleton` into `Dashboard.jsx` to eliminate blank screens during data fetching.
 - Added interactive button loading spinners (`Loader2`) and helpful server-wake feedback to `Login.jsx` and `Signup.jsx`.
 - Configured 10-minute automated keep-alive cron jobs on cron-job.org for both Render backend (`/api/test`) and Flask ML service to eliminate free-tier sleep cycles and reduce latency.
+## Day 27 (Multimodal AI Receipt Scanner & FIRE Wealth Simulator)
+- Implemented Multimodal AI Receipt & Invoice Scanner endpoint (`POST /api/assistant/scan-receipt`) using Gemini 3.6 Flash Vision.
+- Configured Express body-parser with `10mb` limit and MIME-type auto-detection (`image/jpeg`, `image/png`, `image/webp`).
+- Integrated one-click "Scan Receipt (AI)" camera button into `AddTransactionForm.jsx` that automatically extracts merchant name, amount, date, and auto-selects the corresponding database category.
+- Built `FireSimulator.jsx`: an interactive Financial Independence, Retire Early (FIRE) wealth modeling studio with Recharts compound growth area charts.
+- Included customizable sliders for retirement age, monthly SIP contribution, expected equity CAGR (12%), inflation (6%), and strategy toggles (Lean FIRE, Standard FIRE, Fat FIRE).
+- Mounted `FireSimulator` in `Dashboard.jsx`.

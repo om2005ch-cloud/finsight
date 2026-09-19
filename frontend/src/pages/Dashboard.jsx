@@ -15,6 +15,7 @@ import CategoryBreakdownBar from '../components/CategoryBreakdownBar';
 import TransactionListSection from '../components/TransactionListSection';
 import QuickAddModal from '../components/QuickAddModal';
 import DashboardSkeleton from '../components/DashboardSkeleton';
+import FireSimulator from '../components/FireSimulator';
 
 function Dashboard() {
   const [transactions, setTransactions] = useState([]);
@@ -161,6 +162,9 @@ function Dashboard() {
 
         {/* Financial Health Score & Gamified Micro-Habits */}
         <HealthScoreCard />
+
+        {/* FIRE & Wealth Growth Simulator */}
+        <FireSimulator />
 
         {/* Budget status */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 shadow-sm">
